@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-# Example for the pysql-wrapper class using sqlite3.
+# Example for the pysql-wrapper class, using MySQL instead of sqlite3.
 
 from pysql_wrapper import pysql_wrapper
 import random # To populate the table.
 
 # Create your pysql-wrapper instance!
-pysql = pysql_wrapper(db_type='sqlite3', db_path='example.db')
+pysql = pysql_wrapper(db_type='mysql', db_host='localhost', db_user='foo', db_pass='baz', db_name='test')
 
 # For good measure, let's just quickly make a test table.
 # This is a simple .query() because this is just an example.
 pysql.query('DROP TABLE IF EXISTS `test`')
-pysql.query('CREATE TABLE `test` (`id` INTEGER PRIMARY KEY, `foo` text NOT NULL, `bar` text NOT NULL)')
+pysql.query('CREATE TABLE `test` (`id` int NOT NULL AUTO_INCREMENT, `foo` text NOT NULL, `bar` text NOT NULL, PRIMARY KEY (`id`))')
 
 # Insert some random vals!
 for x in range(10):
