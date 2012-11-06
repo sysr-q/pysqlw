@@ -31,10 +31,11 @@ Usage
 	+ `pysql = pysql_wrapper(db_type='mysql', db_host='localhost', db_user='username', db_pass='password', db_name='database_name')`
 + Use it!
 
+Example usage can be found in the _example_ folder, those are a good start if you're interested.
+
 Documentation
 --
-Give me a few hours to write this up.  
-It's very similar to my [PHP MySQLi Wrapper](https://github.com/PigBacon/PHP-MySQLi-Wrapper), though, so look at that.
+Documentation for pysql-wrapper can be found at the [wiki](https://github.com/PigBacon/pysql-wrapper/wiki/)
 
 License
 --

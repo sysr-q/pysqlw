@@ -5,7 +5,14 @@ from pysql_wrapper import pysql_wrapper
 import random # To populate the table.
 
 # Create your pysql-wrapper instance!
-pysql = pysql_wrapper(db_type='mysql', db_host='localhost', db_user='foo', db_pass='baz', db_name='test')
+pysql_conf = {
+	'db_type': 'mysql',
+	'db_host': 'localhost',
+	'db_user': 'foo',
+	'db_pass': 'baz',
+	'db_name': 'test'
+}
+pysql = pysql_wrapper(**pysql_conf)
 
 # For good measure, let's just quickly make a test table.
 # This is a simple .query() because this is just an example.
