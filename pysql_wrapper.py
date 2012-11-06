@@ -18,9 +18,6 @@ class pysql_wrapper:
 		# The database cursor. We'll use this to actually query stuff.
 		self._cursor = None
 		
-		# Is this a MySQL database? We'll need to tweak some stuff depending.
-		self._is_mysql = False
-		
 		# The finalised query string to send to the dbc.
 		self._query = ""
 		self._query_type = ""
@@ -41,6 +38,13 @@ class pysql_wrapper:
 
 		# Just so we know stuff worked after the connection.
 		self._db_version = "SOMETHING WENT WRONG!"
+		self._db_type = 'DEFAULT'
+
+		# This is so you can easily add extra database types.
+		self._db_connectors = {
+			'sqlite': self._connect_sqlite,
+			'mysql': self._connect_mysql
+		}
 
 		# Do some checks depending on what we're doing.
 		if 'db_type' in kwargs:
@@ -58,11 +62,11 @@ class pysql_wrapper:
 				self._db_user = kwargs.get('db_user')
 				self._db_pass = kwargs.get('db_pass')
 				self._db_name = kwargs.get('db_name')
-				self._is_mysql = True
+				self._db_type = 'mysql'
 			elif _db_type.lower() in ('sqlite', 'sqlite3'):
-				self._is_mysql = False
+				self._db_type = 'sqlite'
 
-		if not self._is_mysql:
+		if self._db_type == 'sqlite':
 			if 'db_path' not in kwargs:
 				# How will we know what database file to use otherwise?
 				raise ValueError('sqlite was selected, but db_path was not given.')
@@ -71,10 +75,12 @@ class pysql_wrapper:
 				if type(self._db_path) is not str:
 					raise TypeError('db_path was passed, but it isn\'t a string.')
 
-		if self._is_mysql:
-			self._connect_mysql()
-		else:
-			self._connect_sqlite()
+		try:
+			# Try to grab the connector.
+			connector = self._db_connectors[self._db_type]
+			connector()
+		except KeyError as e:
+			raise Exception('The given database type is not supported.')
 
 		# Let's knock it up a notch.. BAM!
 		pysql_wrapper._instance = self
@@ -102,6 +108,7 @@ class pysql_wrapper:
 		self._cursor = self._dbc.cursor()
 		self._cursor.execute('SELECT SQLITE_VERSION()')
 		self._db_version = self._cursor.fetchone()
+		self._db_type = 'sqlite'
 
 	def _connect_mysql(self, force=False):
 		'''Connect to the MySQL database.
@@ -113,6 +120,7 @@ class pysql_wrapper:
 		self._cursor = self._dbc.cursor(MySQLdb.cursors.DictCursor)
 		self._cursor.execute('SELECT VERSION()')
 		self._db_version = self._cursor.fetchone()
+		self._db_type = 'mysql'
 
 	def _reset(self):
 		'''Reset the given bits and pieces after each query.
@@ -230,23 +238,28 @@ class pysql_wrapper:
 		return self._cursor.rowcount
 
 	def _execute(self, query, data = None):
-		print query,data
 		if data is not None:
 			self._cursor.execute(query, data)
 		else:
 			self._cursor.execute(query)
-		if not self._is_mysql:
+		if self._db_type == 'sqlite':
 			self._dbc.commit()
 		res = self._cursor.fetchall()
 		self._affected_rows = int(self._cursor.rowcount)
 		return res
 
-	def _determine_type(self, thing):
+	def _format_str(self, thing):
 		'''Returns the format string for the thing.
 
 			Due to how retarded MySQL is, this _HAS_ to be %s, or it won't work.
 		'''
-		return 's'
+		if self._db_type == 'sqlite':
+			return '?'
+		elif self._db_type == 'mysql':
+			return '%s'
+		else:
+			# No idea, return ?.
+			return '?'
 
 	def _build_query(self, num_rows = False, table_data = False):
 		return_data = ()
@@ -262,7 +275,7 @@ class pysql_wrapper:
 				# If we're calling an UPDATE
 				if self._query_type == 'update':
 					for key, val in table_data.iteritems():
-						format = '%' + self._determine_type(val) if self._is_mysql else '?'
+						format = self._format_str(type)
 						if count == len(table_data):
 							self._query += "`{0}` = {1}".format(key, format)
 						else:
@@ -272,7 +285,7 @@ class pysql_wrapper:
 			self._query += " WHERE "
 			where_clause = []
 			for key, val in self._where.iteritems():
-				format = '%' + self._determine_type(val) if self._is_mysql else '?'
+				format = self._format_str(val)
 				where_clause.append("`{0}` = {1}".format(key, format))
 				return_data = return_data + (val,)
 			self._query += ' AND '.join(where_clause)
@@ -287,12 +300,10 @@ class pysql_wrapper:
 				keys[count] = "`{0}`".format(key)
 			self._query += " ({0}) ".format(', '.join(keys))
 			# Append VALUES (?,?,?) however many we need.
-			format = ('?,'*num)[:-1]
-			if self._is_mysql:
-				format = ""
-				for count, val in enumerate(vals):
-					format += '%{0},'.format(self._determine_type(val))
-				format = format[:-1]
+			format = ""
+			for count, val in enumerate(vals):
+				format += '{0},'.format(self._format_str(val))
+			format = format[:-1]
 
 			self._query += "VALUES ({0})".format(format)
 			for val in vals:
