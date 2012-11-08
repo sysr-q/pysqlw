@@ -98,10 +98,10 @@ class pysql_wrapper:
 		return d
 
 	def _connect_sqlite(self, force=False):
-		'''Connect to the sqlite database.
+		"""Connect to the sqlite database.
 
 			This function also grabs the cursor and updates the _db_version
-		'''
+		"""
 		import sqlite3
 		self._dbc = sqlite3.connect(self._db_path)
 		self._dbc.row_factory = self._sqlite_dict_factory
@@ -111,10 +111,10 @@ class pysql_wrapper:
 		self._db_type = 'sqlite'
 
 	def _connect_mysql(self, force=False):
-		'''Connect to the MySQL database.
+		"""Connect to the MySQL database.
 
 			This function also grabs the cursor and updates the _db_version 
-		'''
+		"""
 		import MySQLdb
 		self._dbc = MySQLdb.connect(self._db_host, self._db_user, self._db_pass, self._db_name)
 		self._cursor = self._dbc.cursor(MySQLdb.cursors.DictCursor)
@@ -123,32 +123,32 @@ class pysql_wrapper:
 		self._db_type = 'mysql'
 
 	def _reset(self):
-		'''Reset the given bits and pieces after each query.
-		'''
+		"""Reset the given bits and pieces after each query.
+		"""
 		self._where = {}
 		self._query = ""
 		self._query_type = ""
 		return self
 
 	def where(self, field, value):
-		'''Add a conditional WHERE statement. You can chain multiple where() calls together.
+		"""Add a conditional WHERE statement. You can chain multiple where() calls together.
 
 			Example: pysql.where('id', 1).where('foo', 'bar')
 			Param: 'field' The name of the database field.
 			Param: 'value' The value of the database field.
 			Return: Instance of self for chaining where() calls
-		'''
+		"""
 		self._where[field] = value
 		return self
 
 	def get(self, table_name, num_rows = False):
-		'''SELECT some data from a table.
+		"""SELECT some data from a table.
 
 			Example: pysql.get('table', 1) - Select one row
 			Param: 'table_name' The name of the table to SELECT from.
 			Param: 'num_rows' The (optional) amount of rows to LIMIT to.
 			Return: The results of the SELECT.
-		'''
+		"""
 		self._query_type = 'select'
 		self._query = "SELECT * FROM `{0}`".format(table_name)
 		stmt, data = self._build_query(num_rows=num_rows)
@@ -157,13 +157,13 @@ class pysql_wrapper:
 		return res
 
 	def insert(self, table_name, table_data):
-		'''INSERT data into a table.
+		"""INSERT data into a table.
 
 			Example: pysql.insert('table', {'id': 1, 'foo': 'bar'})
 			Param: 'table_name' The table to INSERT into.
 			Param: 'table_data' A dictionary of key/value pairs to insert.
 			Return: The results of the query.
-		'''
+		"""
 		self._query_type = 'insert'
 		self._query = "INSERT INTO `{0}`".format(table_name)
 		stmt, data = self._build_query(table_data=table_data)
@@ -172,14 +172,14 @@ class pysql_wrapper:
 		return res
 
 	def update(self, table_name, table_data, num_rows = False):
-		'''UPDATE a table. where() must be called first.
+		"""UPDATE a table. where() must be called first.
 
 			Example: pysql.where('id', 1).update('table', {'foo': 'baz'})
 			Param: 'table_name' The name of the table to UPDATE.
 			Param: 'table_data' The key/value pairs to update. (SET `KEY` = 'VALUE')
 			Param: 'num_rows' The (optional) amount of rows to LIMIT to.
 			return True/False, indicating success.
-		'''
+		"""
 		if len(self._where) == 0:
 			return False
 		self._query_type = 'update'
@@ -194,13 +194,13 @@ class pysql_wrapper:
 		return res
 
 	def delete(self, table_name, num_rows = False):
-		'''DELETE from a table. where() must be called first.
+		"""DELETE from a table. where() must be called first.
 
 			Example: pysql.where('id', 1).delete('table')
 			Param: 'table_name' The table to DELETE from.
 			Param: 'num_rows' The (optional) amount of rows to LIMIT to.
 			return True/False, indicating success.
-		'''
+		"""
 		if len(self._where) == 0:
 			return False
 		self._query_type = 'delete'
@@ -218,12 +218,12 @@ class pysql_wrapper:
 		return self._dbc.escape_string(string)
 
 	def query(self, q):
-		'''Execute a raw query directly.
+		"""Execute a raw query directly.
 
 			Example: pysql.query('SELECT * FROM `posts` LIMIT 0, 15')
 			Param: 'q' The query to execute.
 			Return: The result of the query. Could be an array, True, False, anything, really.
-		'''
+		"""
 		self._query_type = 'manual'
 		self._query = q
 		res = self._execute(self._query, data=None)
@@ -231,10 +231,10 @@ class pysql_wrapper:
 		return res
 
 	def affected_rows(self):
-		'''Grab the amount of rows affected by the last query.
+		"""Grab the amount of rows affected by the last query.
 
 			Return: The amount of rows modified.
-		'''
+		"""
 		return self._cursor.rowcount
 
 	def _execute(self, query, data = None):
@@ -249,10 +249,10 @@ class pysql_wrapper:
 		return res
 
 	def _format_str(self, thing):
-		'''Returns the format string for the thing.
+		"""Returns the format string for the thing.
 
 			Due to how retarded MySQL is, this _HAS_ to be %s, or it won't work.
-		'''
+		"""
 		if self._db_type == 'sqlite':
 			return '?'
 		elif self._db_type == 'mysql':
