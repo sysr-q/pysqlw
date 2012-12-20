@@ -26,7 +26,7 @@ Usage
 + Import pysql-wrapper:
 	+ `from pysql_wrapper import pysql_wrapper`
 + Create a new instance:
-	+ `pysql = pysql_wrapper(db_path='some/file.db')` (uses sqlite3 default)
+	+ `pysql = pysql_wrapper(db_type='sqlite', db_path='some/file.db')` (uses sqlite3 default, so db_type is optional here)
 	+ If you want to use MySQL you need to supply more details:
 	+ `pysql = pysql_wrapper(db_type='mysql', db_host='localhost', db_user='username', db_pass='password', db_name='database_name')`
 + Use it!
@@ -39,6 +39,8 @@ Documentation for pysql-wrapper can be found at the [wiki](https://github.com/Pi
 
 License
 --
+(This is also provided in the LICENSE file)
+```
 Copyright (C) 2012 Christopher Carter <chris@gibsonsec.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -46,3 +48,4 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```

@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-#Copyright (C) 2012 Christopher Carter <chris@gibsonsec.org>
+# Copyright (C) 2012 Christopher Carter <chris@gibsonsec.org>
+# Licensed under the MIT License.
 #
-#Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-#
-#The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-#
-#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 class pysql_wrapper:
 	_instance = None
 
-	def __init__(self, **kwargs):
+	def __init__(self, debug=False, **kwargs):
+		# Are we gonna print various debugging messages?
+		self.debug = debug
+
 		# The internal database connection.
 		# Can be either MySQL or sqlite, it doesnt matter.
 		self._dbc = None
@@ -65,25 +64,30 @@ class pysql_wrapper:
 				self._db_type = 'mysql'
 			elif _db_type.lower() in ('sqlite', 'sqlite3'):
 				self._db_type = 'sqlite'
-
-		if self._db_type == 'sqlite':
-			if 'db_path' not in kwargs:
-				# How will we know what database file to use otherwise?
-				raise ValueError('sqlite was selected, but db_path was not given.')
-			else:
-				self._db_path = kwargs.get('db_path')
-				if type(self._db_path) is not str:
-					raise TypeError('db_path was passed, but it isn\'t a string.')
+				if 'db_path' not in kwargs:
+					self._debug('Using sqlite and not given db_path.')
+					raise ValueError('sqlite was selected, but db_path was not specified.')
+				else:
+					self._db_path = kwargs.get('db_path')
+					if not isinstance(self._db_path, str):
+						self._debug('Given', self._db_path, 'of type', type(self._db_path), 'which isn\'t a string.')
+						raise TypeError("db_path was passed, but isn't a string.")
 
 		try:
 			# Try to grab the connector.
 			connector = self._db_connectors[self._db_type]
 			connector()
 		except KeyError as e:
+			self._debug('Given', self._db_type, 'as database_type, not supported.')
 			raise Exception('The given database type is not supported.')
 
 		# Let's knock it up a notch.. BAM!
 		pysql_wrapper._instance = self
+
+	def _debug(self, *stuff):
+		if not self.debug:
+			return
+		print '[ ? ]', ' '.join(stuff)
 
 	def __del__(self):
 		# If this isn't called, it shouldn't really matter anyway.
@@ -141,7 +145,7 @@ class pysql_wrapper:
 		self._where[field] = value
 		return self
 
-	def get(self, table_name, num_rows = False):
+	def get(self, table_name, num_rows=False):
 		"""SELECT some data from a table.
 
 			Example: pysql.get('table', 1) - Select one row
@@ -168,6 +172,10 @@ class pysql_wrapper:
 		self._query = "INSERT INTO `{0}`".format(table_name)
 		stmt, data = self._build_query(table_data=table_data)
 		res  = self._execute(stmt, data)
+		if self._affected_rows > 0:
+			res = True
+		else:
+			res = False
 		self._reset()
 		return res
 
@@ -237,7 +245,7 @@ class pysql_wrapper:
 		"""
 		return self._cursor.rowcount
 
-	def _execute(self, query, data = None):
+	def _execute(self, query, data=None):
 		if data is not None:
 			self._cursor.execute(query, data)
 		else:
@@ -261,7 +269,7 @@ class pysql_wrapper:
 			# No idea, return ?.
 			return '?'
 
-	def _build_query(self, num_rows = False, table_data = False):
+	def _build_query(self, num_rows=False, table_data=False):
 		return_data = ()
 
 		# e.g. -> UPDATE `table` SET `this` = ?, `that` = ?, `foo` = ? WHERE `id` = ?;
