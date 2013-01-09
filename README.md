@@ -35,7 +35,7 @@ Example usage can be found in the _example_ folder, those are a good start if yo
 
 Documentation
 --
-Documentation for pysql-wrapper can be found at the [wiki](https://github.com/PigBacon/pysql-wrapper/wiki/)
+Documentation for pysql-wrapper can be found at the [wiki](https://github.com/plausibility/pysql-wrapper/wiki/)
 
 License
 --
