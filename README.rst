@@ -28,7 +28,8 @@ Usage
 -  Import pysqlw:
     - ``import pysqlw``
 -  Create a new instance:
-    -  ``pysql = pysqlw.pysqlw(db_type='sqlite', db_path='some/file.db')`` (uses sqlite3 default, so db\_type is optional here)
+    -  ``db_type`` defaults to sqlite, so you won't have to change it unless you want MySQL.
+    -  ``pysql = pysqlw.pysqlw(db_type='sqlite', db_path='/home/user/example.db')``
     -  If you want to use MySQL you need to supply more details:
     -  ``pysql = pysqlw.pysqlw(db_type='mysql', db_host='localhost', db_user='username', db_pass='password', db_name='database_name')``
 -  Documentation is found in the `usage`_ wiki page.
