@@ -30,4 +30,4 @@ Usage
 	+ `pysql = pysql_wrapper(db_type='sqlite', db_path='some/file.db')` (uses sqlite3 default, so db_type is optional here)
 	+ If you want to use MySQL you need to supply more details:
 	+ `pysql = pysql_wrapper(db_type='mysql', db_host='localhost', db_user='username', db_pass='password', db_name='database_name')`
-+ Documentation is found in the [Usage](https://github.com/plausibility/pysql-wrapper/wiki/Usage) wiki page.
++ Documentation is found in the [Usage](https://github.com/plausibility/pysqlw/wiki/Usage) wiki page.
