@@ -6,7 +6,7 @@ def long_desc():
 
 kw = {
 	"name": "pysqlw",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "Python wrapper to make MySQL and SQLite easy",
 	"long_description": long_desc(),
 	"url": "https://github.com/plausibility/pysqlw",
@@ -14,7 +14,16 @@ kw = {
 	"author_email": "chris@gibsonsec.org",
 	"license": "MIT",
 	"packages": ['pysqlw'],
-	"zip_safe": False
+	"zip_safe": False,
+	"keywords": "sql sqlite mysql wrapper",
+	"classifiers": [
+		"Development Status :: 5 - Production/Stable",
+		"Intended Audience :: Developers",
+		"License :: OSI Approved :: MIT License",
+		"Operating System :: OS Independent",
+		"Programming Language :: Python :: 2.7",
+		"Topic :: Database"
+	]
 }
 
 if __name__ == "__main__":

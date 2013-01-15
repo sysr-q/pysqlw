@@ -8,12 +8,9 @@ class pysqlw:
 		# Are we gonna print various debugging messages?
 		self.debug = debug
 
-		# The internal database connection.
-		# Can be either MySQL or sqlite, it doesnt matter.
-		self._dbc = None
-
-		# The database cursor. We'll use this to actually query stuff.
-		self._cursor = None
+		# The wrapper we're using. sqlitew, mysqlw, etc.
+		# Imported at runtime and used to make objects.
+		self._wrap = None
 		
 		# The finalised query string to send to the dbc.
 		self._query = ""
@@ -24,60 +21,25 @@ class pysqlw:
 		
 		# An internal counter of modified rows from the last statement.
 		self._affected_rows = 0
-		
-		# Stuff we won't need unless we're using MySQL.
-		self._db_host = None
-		self._db_user = None
-		self._db_pass = None
-		self._db_name = None
-		# Stuff we won't need unless we're using sqlite3
-		self._db_path = None
-
-		# If either of these are len() == 0, something is wrong.
-		self._db_version = ""
-		self._db_type = ""
-
-		# This is so you can easily add extra database types.
-		self._db_connectors = {
-			'sqlite': self._connect_sqlite,
-			'mysql': self._connect_mysql
-		}
 
 		# Do some checks depending on what we're doing.
-		if 'db_type' in kwargs:
-			_db_type = kwargs['db_type']
-			if _db_type.lower() == 'mysql':
-				for db in ('db_host', 'db_user', 'db_pass', 'db_name'):
-					if db not in kwargs:
-						# If they miss something, we can't connect to MySQL.
-						raise ValueError('No {0} was passed to pysql_wrapper.'.format(db))
-					else:
-						# We only want strings!
-						if type(kwargs.get(db)) != str:
-							raise TypeError('{0} was passed, but it isn\'t a string.')
-				self._db_host = kwargs.get('db_host')
-				self._db_user = kwargs.get('db_user')
-				self._db_pass = kwargs.get('db_pass')
-				self._db_name = kwargs.get('db_name')
-				self._db_type = 'mysql'
-			elif _db_type.lower() in ('sqlite', 'sqlite3'):
-				self._db_type = 'sqlite'
-				if 'db_path' not in kwargs:
-					self._debug('Using sqlite and not given db_path.')
-					raise ValueError('sqlite was selected, but db_path was not specified.')
-				else:
-					self._db_path = kwargs.get('db_path')
-					if not isinstance(self._db_path, str):
-						self._debug('Given', self._db_path, 'of type', type(self._db_path), 'which isn\'t a string.')
-						raise TypeError("db_path was passed, but isn't a string.")
+		if 'db_type' not in kwargs:
+			raise ValueError("'db_type' not passed when required")
+		kwargs['db_type'] = kwargs['db_type'].lower()
+		self._db_type = kwargs.get('db_type')
 
 		try:
-			# Try to grab the connector.
-			connector = self._db_connectors[self._db_type]
-			connector()
-		except KeyError as e:
-			self._debug('Given', self._db_type, 'as database_type, not supported.')
-			raise Exception('The given database type is not supported.')
+			# We're already in the pysqlw package, so just: import wrapperw
+			wrapper = __import__('{0}w'.format(kwargs.get('db_type')), globals(), locals())
+			# Then just make an instance.
+			self._wrap = getattr(wrapper, '{0}w'.format(kwargs.get('db_type')))(**kwargs)
+		except ImportError as e:
+			raise ImportError('Database wrapper "{0}" does not exist or is incorrectly packaged'.format(kwargs.get('db_type')))
+		except AttributeError as e:
+			raise AttributeError('Database wrapper "{0}" exists but is incorrectly written'.format(kwargs.get('db_type')))
+
+		if not self._wrap.connect():
+			raise Exception('Unable to connect to database. ({0})'.format(self._db_type))
 
 	def _debug(self, *stuff):
 		if not self.debug:
@@ -87,39 +49,8 @@ class pysqlw:
 	def __del__(self):
 		# If this isn't called, it shouldn't really matter anyway.
 		# If it is, let's tear down our connections.
-		if self._dbc:
-			self._dbc.close()
-
-	def _sqlite_dict_factory(self, cursor, row):
-		d = {}
-		for idx, col in enumerate(cursor.description):
-			d[col[0]] = row[idx]
-		return d
-
-	def _connect_sqlite(self, force=False):
-		"""Connect to the sqlite database.
-
-			This function also grabs the cursor and updates the _db_version
-		"""
-		import sqlite3
-		self._dbc = sqlite3.connect(self._db_path)
-		self._dbc.row_factory = self._sqlite_dict_factory
-		self._cursor = self._dbc.cursor()
-		self._cursor.execute('SELECT SQLITE_VERSION()')
-		self._db_version = self._cursor.fetchone()
-		self._db_type = 'sqlite'
-
-	def _connect_mysql(self, force=False):
-		"""Connect to the MySQL database.
-
-			This function also grabs the cursor and updates the _db_version 
-		"""
-		import MySQLdb
-		self._dbc = MySQLdb.connect(self._db_host, self._db_user, self._db_pass, self._db_name)
-		self._cursor = self._dbc.cursor(MySQLdb.cursors.DictCursor)
-		self._cursor.execute('SELECT VERSION()')
-		self._db_version = self._cursor.fetchone()
-		self._db_type = 'mysql'
+		if self._wrap.dbc:
+			self._wrap.dbc.close()
 
 	def _reset(self):
 		"""Reset the given bits and pieces after each query.
@@ -218,7 +149,7 @@ class pysqlw:
 		return res
 
 	def escape(self, string):
-		return self._dbc.escape_string(string)
+		return self._wrap.dbc.escape_string(string)
 
 	def query(self, q):
 		"""Execute a raw query directly.
@@ -238,31 +169,18 @@ class pysqlw:
 
 			Return: The amount of rows modified.
 		"""
-		return self._cursor.rowcount
+		return self._wrap.cursor.rowcount
 
 	def _execute(self, query, data=None):
 		if data is not None:
-			self._cursor.execute(query, data)
+			self._wrap.cursor.execute(query, data)
 		else:
-			self._cursor.execute(query)
+			self._wrap.cursor.execute(query)
 		if self._db_type == 'sqlite':
-			self._dbc.commit()
-		res = self._cursor.fetchall()
-		self._affected_rows = int(self._cursor.rowcount)
+			self._wrap.dbc.commit()
+		res = self._wrap.cursor.fetchall()
+		self._affected_rows = int(self._wrap.cursor.rowcount)
 		return res
-
-	def _format_str(self, thing):
-		"""Returns the format string for the thing.
-
-			Due to how retarded MySQL is, this _HAS_ to be %s, or it won't work.
-		"""
-		if self._db_type == 'sqlite':
-			return '?'
-		elif self._db_type == 'mysql':
-			return '%s'
-		else:
-			# No idea, return ?.
-			return '?'
 
 	def _build_query(self, num_rows=False, table_data=False):
 		return_data = ()
@@ -278,7 +196,7 @@ class pysqlw:
 				# If we're calling an UPDATE
 				if self._query_type == 'update':
 					for key, val in table_data.iteritems():
-						format = self._format_str(type)
+						format = self._wrap.format(val)
 						if count == len(table_data):
 							self._query += "`{0}` = {1}".format(key, format)
 						else:
@@ -288,7 +206,7 @@ class pysqlw:
 			self._query += " WHERE "
 			where_clause = []
 			for key, val in self._where.iteritems():
-				format = self._format_str(val)
+				format = self._wrap.format(val)
 				where_clause.append("`{0}` = {1}".format(key, format))
 				return_data = return_data + (val,)
 			self._query += ' AND '.join(where_clause)
@@ -305,7 +223,7 @@ class pysqlw:
 			# Append VALUES (?,?,?) however many we need.
 			format = ""
 			for count, val in enumerate(vals):
-				format += '{0},'.format(self._format_str(val))
+				format += '{0},'.format(self._wrap.format(val))
 			format = format[:-1]
 
 			self._query += "VALUES ({0})".format(format)

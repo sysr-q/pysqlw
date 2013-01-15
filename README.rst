@@ -2,12 +2,12 @@
 pysqlw
 ======
 
-A Python based wrapper allowing easy MySQL and SQLite interactions. (Incase you care: pysql is pronounced: *py-skew-el*)
+A Python based wrapper (meta-wrapper, even) allowing easy MySQL and SQLite interactions. (Incase you care: pysql is pronounced: *py-skew-el*)
 
 Requirements
 ============
 
--  Python 2.7.3 (this is what I test with, should work with 2.6.x, 3.x not guaranteed)
+-  Python 2.7.3 (this is what I test with, should work with most 2.x, not sure about 3.x)
 -  sqlite3 module (comes with Python installs)
 -  Install `MySQLdb`_ if you want MySQL support
     -  If you’re using a Debian-like distro (Ubuntu, Debian, Crunchbang, etc), install the package **python-mysqldb**
@@ -33,6 +33,11 @@ Usage
     -  If you want to use MySQL you need to supply more details:
     -  ``pysql = pysqlw.pysqlw(db_type='mysql', db_host='localhost', db_user='username', db_pass='password', db_name='database_name')``
 -  Documentation is found in the `usage`_ wiki page.
+
+Contributing
+============
+If you're interested, you can write extra interaction wrappers for foreign database types.  
+They're pretty simple, look at the ``sqlitew.py`` script for an example.
 
 .. _MySQLdb: http://sourceforge.net/projects/mysql-python/
 .. _This link: http://blog.mysqlboy.com/2010/08/installing-mysqldb-python-module.html
