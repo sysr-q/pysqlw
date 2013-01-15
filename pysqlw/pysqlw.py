@@ -2,7 +2,7 @@
 # Copyright (C) 2012 Christopher Carter <chris@gibsonsec.org>
 # Licensed under the MIT License.
 
-class pysql_wrapper:
+class pysqlw:
 
 	def __init__(self, debug=False, **kwargs):
 		# Are we gonna print various debugging messages?
@@ -79,10 +79,10 @@ class pysql_wrapper:
 			self._debug('Given', self._db_type, 'as database_type, not supported.')
 			raise Exception('The given database type is not supported.')
 
-	def _debug(self, *stuff, joiner=" "):
+	def _debug(self, *stuff):
 		if not self.debug:
 			return
-		print '[ ? ]', joiner.join([str(s) for s in stuff])
+		print '[ ? ]', ' '.join([str(s) for s in stuff])
 
 	def __del__(self):
 		# If this isn't called, it shouldn't really matter anyway.
