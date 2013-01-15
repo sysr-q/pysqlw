@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2012 Christopher Carter <chris@gibsonsec.org>
 # Licensed under the MIT License.
-#
 
 class pysql_wrapper:
-	_instance = None
 
 	def __init__(self, debug=False, **kwargs):
 		# Are we gonna print various debugging messages?
@@ -35,9 +33,9 @@ class pysql_wrapper:
 		# Stuff we won't need unless we're using sqlite3
 		self._db_path = None
 
-		# Just so we know stuff worked after the connection.
-		self._db_version = "SOMETHING WENT WRONG!"
-		self._db_type = 'DEFAULT'
+		# If either of these are len() == 0, something is wrong.
+		self._db_version = ""
+		self._db_type = ""
 
 		# This is so you can easily add extra database types.
 		self._db_connectors = {
@@ -81,13 +79,10 @@ class pysql_wrapper:
 			self._debug('Given', self._db_type, 'as database_type, not supported.')
 			raise Exception('The given database type is not supported.')
 
-		# Let's knock it up a notch.. BAM!
-		pysql_wrapper._instance = self
-
-	def _debug(self, *stuff):
+	def _debug(self, *stuff, joiner=" "):
 		if not self.debug:
 			return
-		print '[ ? ]', ' '.join(stuff)
+		print '[ ? ]', joiner.join([str(s) for s in stuff])
 
 	def __del__(self):
 		# If this isn't called, it shouldn't really matter anyway.
@@ -278,7 +273,7 @@ class pysql_wrapper:
 		if len(self._where) > 0:
 			keys = self._where.keys()
 			# If they've supplied table data:
-			if type(table_data == dict):
+			if isinstance(table_data, dict):
 				count = 1
 				# If we're calling an UPDATE
 				if self._query_type == 'update':
@@ -299,7 +294,7 @@ class pysql_wrapper:
 			self._query += ' AND '.join(where_clause)
 
 		# If they've supplied table data.
-		if type(table_data) == dict and self._query_type == 'insert':
+		if isinstance(table_data, dict) and self._query_type == 'insert':
 			keys = table_data.keys()
 			vals = table_data.values()
 			num  = len(table_data)
