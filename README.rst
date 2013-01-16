@@ -31,7 +31,7 @@ Usage
     -  ``pysql = pysqlw.pysqlw(db_type='sqlite', db_path='/home/user/example.db')``
     -  If you want to use MySQL you need to supply more details:
     -  ``pysql = pysqlw.pysqlw(db_type='mysql', db_host='localhost', db_user='username', db_pass='password', db_name='database_name')``
--  Documentation is found in the `usage`_ wiki page.
+-  Documentation is now on the pysqlw `readthedocs`_ entry.
 
 Contributing
 ============
@@ -40,4 +40,4 @@ They're pretty simple, look at the ``sqlitew.py`` script for an example.
 
 .. _MySQLdb: http://sourceforge.net/projects/mysql-python/
 .. _This link: http://blog.mysqlboy.com/2010/08/installing-mysqldb-python-module.html
-.. _usage: https://github.com/plausibility/pysqlw/wiki/Usage
+.. _readthedocs: https://pysqlw.readthedocs.org
