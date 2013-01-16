@@ -1,0 +1,338 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Usage &mdash; pysqlw 1.1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pysqlw 1.1.1 documentation" href="index.html" />
+    <link rel="next" title="pysqlw wrappers" href="wrappers.html" />
+    <link rel="prev" title="Welcome to pysqlw’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="wrappers.html" title="pysqlw wrappers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to pysqlw’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pysqlw 1.1.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="install-setup">
+<h2>Install &amp; setup<a class="headerlink" href="#install-setup" title="Permalink to this headline">¶</a></h2>
+<p>What good is pysqlw if you can&#8217;t actually use it, right? Thankfully, pysqlw is a breeze to install and setup!</p>
+<p>pysqlw is on <a class="reference external" href="https://pypi.python.org/pypi/pysqlw">pypi</a>, so you just have to <tt class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pysqlw</span></tt>, and pip does the rest! <br />
+Then you just have to <tt class="docutils literal"><span class="pre">import</span> <span class="pre">pysqlw</span></tt>, and you&#8217;re set.</p>
+<div class="section" id="setup">
+<h3>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h3>
+<p>Generally, you&#8217;ll simply create a pysqlw object by making an instance of <tt class="docutils literal"><span class="pre">pysqlw.pysqlw</span></tt>. <br />
+The actual things you pass to the initialisation will differ based on what type of database you want to work with.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pysqlw</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">pysqlw</span><span class="o">.</span><span class="n">pysqlw</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="setup-for-sqlite">
+<h3>Setup for sqlite<a class="headerlink" href="#setup-for-sqlite" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pysqlw</span>
+
+<span class="c"># Pass in an absolute path to your sqlite3 database file.</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">pysqlw</span><span class="o">.</span><span class="n">pysqlw</span><span class="p">(</span><span class="n">db_type</span><span class="o">=</span><span class="s">&quot;sqlite&quot;</span><span class="p">,</span> <span class="n">db_path</span><span class="o">=</span><span class="s">&quot;/home/user/pysqlw.db&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="setup-for-mysql">
+<h3>Setup for MySQL<a class="headerlink" href="#setup-for-mysql" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pysqlw</span>
+
+<span class="c"># Since we&#39;re using MySQL, we have to pass in relevant information; host, user, pass, database</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;db_type&quot;</span><span class="p">:</span> <span class="s">&quot;mysql&quot;</span><span class="p">,</span>
+        <span class="s">&quot;db_host&quot;</span><span class="p">:</span> <span class="s">&quot;localhost&quot;</span><span class="p">,</span>
+        <span class="s">&quot;db_user&quot;</span><span class="p">:</span> <span class="s">&quot;foo&quot;</span><span class="p">,</span>
+        <span class="s">&quot;db_pass&quot;</span><span class="p">:</span> <span class="s">&quot;bar&quot;</span><span class="p">,</span>
+        <span class="s">&quot;db_name&quot;</span><span class="p">:</span> <span class="s">&quot;example&quot;</span>
+<span class="p">}</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">pysqlw</span><span class="o">.</span><span class="n">pysqlw</span><span class="p">(</span><span class="o">**</span><span class="n">conf</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+</div>
+<div class="section" id="querying-your-database">
+<h2>Querying your database<a class="headerlink" href="#querying-your-database" title="Permalink to this headline">¶</a></h2>
+<p>For reference, the <tt class="docutils literal"><span class="pre">p</span></tt> object we&#8217;re working with is from <tt class="docutils literal"><span class="pre">p</span> <span class="pre">=</span> <span class="pre">pysqlw.pysqlw(...)</span></tt>. <br />
+<tt class="docutils literal"><span class="pre">table_name</span></tt> is just a fictional table in a non-existant database. Swap it out for your tables real name.</p>
+<div class="section" id="select">
+<h3>SELECT<a class="headerlink" href="#select" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre><span class="c"># SELECT all rows from the table</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;table_name&#39;</span><span class="p">)</span>
+
+<span class="c"># SELECT only the first five rows</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;table_name&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="c"># SELECT only the rows where: `foo` = &#39;bar&#39;</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s">&#39;foo&#39;</span><span class="p">,</span> <span class="s">&#39;bar&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;table_name&#39;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="insert">
+<h3>INSERT<a class="headerlink" href="#insert" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="highlight"><pre><span class="c"># This is the data we&#39;re going to INSERT into the table.</span>
+<span class="c"># Keys relate to table column names, values are what we&#39;re inserting there.</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;foo&quot;</span><span class="p">:</span> <span class="s">&quot;bar&quot;</span><span class="p">,</span>
+        <span class="s">&quot;baz&quot;</span><span class="p">:</span> <span class="s">&quot;qux&quot;</span><span class="p">,</span>
+        <span class="s">&quot;moo&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&#39;table_name&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c"># Success!</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="update">
+<h3>UPDATE<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h3>
+<p>You <strong>must</strong> call <tt class="docutils literal"><span class="pre">where()</span></tt> before you can update.</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13</pre></div></td><td class="code"><div class="highlight"><pre><span class="c"># k/v relates to column-name/value, as above</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;foo&quot;</span><span class="p">:</span> <span class="s">&quot;baz&quot;</span><span class="p">,</span>
+        <span class="s">&quot;moo&quot;</span><span class="p">:</span> <span class="mi">7</span>
+<span class="p">}</span>
+
+<span class="c"># UPDATE all rows where: `name` = &#39;John&#39;</span>
+<span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;John&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s">&#39;table_name&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c"># Success!</span>
+
+<span class="c"># UPDATE only a single row where: `name` = &#39;Pete&#39;</span>
+<span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;Pete&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s">&#39;table_name&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="c"># Success!</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="delete">
+<h3>DELETE<a class="headerlink" href="#delete" title="Permalink to this headline">¶</a></h3>
+<p>You <strong>must</strong> call <tt class="docutils literal"><span class="pre">where()</span></tt> before you can delete.</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span class="c"># DELETE any row where: `name` = &#39;John&#39;</span>
+<span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;Pete&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s">&#39;table_name&#39;</span><span class="p">):</span>
+        <span class="c"># Success!</span>
+
+<span class="c"># DELETE only a single row where: `id` = 1</span>
+<span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s">&#39;id&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s">&#39;table_name&#39;</span><span class="p">):</span>
+        <span class="c"># Success!</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="where">
+<h3>WHERE<a class="headerlink" href="#where" title="Permalink to this headline">¶</a></h3>
+<p>This adds a WHERE query to your SQL. You can dictate what rows and columns to operate on with this. <br />
+There are two ways to work with your <tt class="docutils literal"><span class="pre">where()</span></tt> call.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># On separate lines:</span>
+<span class="n">p</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s">&#39;id&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s">&#39;foo&#39;</span><span class="p">,</span> <span class="s">&#39;bar&#39;</span><span class="p">)</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;table_name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Chained together</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s">&#39;id&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s">&#39;foo&#39;</span><span class="p">,</span> <span class="s">&#39;bar&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;table_name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="affected-rows">
+<h3>Affected rows<a class="headerlink" href="#affected-rows" title="Permalink to this headline">¶</a></h3>
+<p>Want to know how many rows you modified with the last executed query? This will show you just that.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;surname&quot;</span><span class="p">:</span> <span class="s">&quot;Smith&quot;</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;John&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s">&#39;table_name&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c"># Success!</span>
+        <span class="k">print</span> <span class="s">&#39;Affected rows:&#39;</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">affected_rows</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="escape-unsafe-data">
+<h3>Escape unsafe data<a class="headerlink" href="#escape-unsafe-data" title="Permalink to this headline">¶</a></h3>
+<p>Due to how bound queries work, the data you pass in is actually transparently escaped for you; you don&#8217;t have to do anything to be safe.
+If for some reason you still want to escape data, use the <tt class="docutils literal"><span class="pre">escape(var)</span></tt> method. It passes through your information to the database&#8217;s escape method, so we can&#8217;t guarantee that it&#8217;s secure.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># OH NO, THIS PERSON HAS SOME SCARY QUOTES!</span>
+<span class="n">user</span> <span class="o">=</span> <span class="s">&quot;Some&#39;Dangerous&#39;Username&quot;</span>
+<span class="c"># Not today, hacker scum!</span>
+<span class="n">safe_user</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+<span class="c"># Now you&#39;re safe from the menaces of society.</span>
+<span class="k">print</span> <span class="n">safe_user</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="your-own-query">
+<h3>Your own query<a class="headerlink" href="#your-own-query" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This doesn&#8217;t do any behind-the-scenes binding, escaping, or anything of the sort. It&#8217;s <strong>your</strong> job to keep it safe.</p>
+</div>
+<p>If for some reason, you wish to execute a manual query (joins, union selects, other query wizardry), you&#8217;ll have to use the <tt class="docutils literal"><span class="pre">query(q)</span></tt> method. Poor you!</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s">&#39;SELECT `this` FROM `that` UNION SELECT `this` FROM `other`&#39;</span><span class="p">)</span>
+<span class="c"># Data is whatever your query might return.</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Usage</a><ul>
+<li><a class="reference internal" href="#install-setup">Install &amp; setup</a><ul>
+<li><a class="reference internal" href="#setup">Setup</a></li>
+<li><a class="reference internal" href="#setup-for-sqlite">Setup for sqlite</a></li>
+<li><a class="reference internal" href="#setup-for-mysql">Setup for MySQL</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#querying-your-database">Querying your database</a><ul>
+<li><a class="reference internal" href="#select">SELECT</a></li>
+<li><a class="reference internal" href="#insert">INSERT</a></li>
+<li><a class="reference internal" href="#update">UPDATE</a></li>
+<li><a class="reference internal" href="#delete">DELETE</a></li>
+<li><a class="reference internal" href="#where">WHERE</a></li>
+<li><a class="reference internal" href="#affected-rows">Affected rows</a></li>
+<li><a class="reference internal" href="#escape-unsafe-data">Escape unsafe data</a></li>
+<li><a class="reference internal" href="#your-own-query">Your own query</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to pysqlw&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="wrappers.html"
+                        title="next chapter">pysqlw wrappers</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/usage.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="wrappers.html" title="pysqlw wrappers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to pysqlw’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">pysqlw 1.1.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, plausibility.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
