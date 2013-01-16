@@ -3,8 +3,20 @@
 # Licensed under the MIT License.
 
 class pysqlw:
+	""" pysqlw is a meta-wrapper to sqlite and mysql (+ others) modules,
+		allowing for easy interaction with these modules, and a clean
+		front-end for building SQL queries, without needing perfect
+		knowledge of how SQL pulls together.
+	"""
 
 	def __init__(self, debug=False, **kwargs):
+		""" Create required instance objects, and attempt to connect to
+			the database by importing the wrapper.
+
+			:param debug: allows debug messages to print to stdout
+			:type debug: boolean
+			:param **kwargs: keyword args, passed along to the wrappers
+		"""
 		# Are we gonna print various debugging messages?
 		self.debug = debug
 
@@ -42,42 +54,43 @@ class pysqlw:
 			raise Exception('Unable to connect to database. ({0})'.format(self._db_type))
 
 	def _debug(self, *stuff):
+		"""Print debugging messages, if enabled"""
 		if not self.debug:
 			return
 		print '[ ? ]', ' '.join([str(s) for s in stuff])
 
 	def __del__(self):
-		# If this isn't called, it shouldn't really matter anyway.
-		# If it is, let's tear down our connections.
+		"""Tear down the database connection"""
 		if self._wrap.dbc:
 			self._wrap.dbc.close()
 
 	def _reset(self):
-		"""Reset the given bits and pieces after each query.
-		"""
+		"""Reset the query variables after each query"""
 		self._where = {}
 		self._query = ""
 		self._query_type = ""
 		return self
 
 	def where(self, field, value):
-		"""Add a conditional WHERE statement. You can chain multiple where() calls together.
+		""" Add a conditional WHERE statement. You can chain multiple where() calls together.
 
-			Example: pysql.where('id', 1).where('foo', 'bar')
-			Param: 'field' The name of the database field.
-			Param: 'value' The value of the database field.
-			Return: Instance of self for chaining where() calls
+			:example: p.where('id', 1).where('foo', 'bar')
+			:param field: The name of the database field
+			:param value: The value of the database field
+			:return: Instance of self for chaining where() calls
 		"""
 		self._where[field] = value
 		return self
 
 	def get(self, table_name, num_rows=False):
-		"""SELECT some data from a table.
+		""" SELECT some data from a table.
 
-			Example: pysql.get('table', 1) - Select one row
-			Param: 'table_name' The name of the table to SELECT from.
-			Param: 'num_rows' The (optional) amount of rows to LIMIT to.
-			Return: The results of the SELECT.
+			:example: p.get('table') - Select all rows
+			:example: p.get('table', 1) - Select one row
+			:param table_name: The name of the table to SELECT from
+			:param num_rows: The amount of rows to LIMIT to
+			:type num_rows: integer or None
+			:return: The results of the SELECT
 		"""
 		self._query_type = 'select'
 		self._query = "SELECT * FROM `{0}`".format(table_name)
@@ -87,12 +100,12 @@ class pysqlw:
 		return res
 
 	def insert(self, table_name, table_data):
-		"""INSERT data into a table.
+		""" INSERT data into a table.
 
-			Example: pysql.insert('table', {'id': 1, 'foo': 'bar'})
-			Param: 'table_name' The table to INSERT into.
-			Param: 'table_data' A dictionary of key/value pairs to insert.
-			Return: The results of the query.
+			:example: p.insert('table', {'id': 1, 'foo': 'bar'})
+			:param table_name: The table to INSERT into
+			:param table_data: A dictionary of key/value pairs to insert
+			:return: True/False, indicating success
 		"""
 		self._query_type = 'insert'
 		self._query = "INSERT INTO `{0}`".format(table_name)
@@ -105,14 +118,15 @@ class pysqlw:
 		self._reset()
 		return res
 
-	def update(self, table_name, table_data, num_rows = False):
-		"""UPDATE a table. where() must be called first.
+	def update(self, table_name, table_data, num_rows=False):
+		""" UPDATE a table. where() must be called first.
 
-			Example: pysql.where('id', 1).update('table', {'foo': 'baz'})
-			Param: 'table_name' The name of the table to UPDATE.
-			Param: 'table_data' The key/value pairs to update. (SET `KEY` = 'VALUE')
-			Param: 'num_rows' The (optional) amount of rows to LIMIT to.
-			return True/False, indicating success.
+			:example: p.where('id', 1).update('table', {'foo': 'baz'})
+			:param table_name: The name of the table to UPDATE
+			:param table_data: The key/value pairs to update. (SET `KEY` = 'VALUE')
+			:param num_rows: The amount of rows to LIMIT to
+			:type num_rows: integer or False
+			:return: True/False, indicating success
 		"""
 		if len(self._where) == 0:
 			return False
@@ -127,13 +141,14 @@ class pysqlw:
 		self._reset()
 		return res
 
-	def delete(self, table_name, num_rows = False):
-		"""DELETE from a table. where() must be called first.
+	def delete(self, table_name, num_rows=False):
+		""" DELETE from a table. where() must be called first.
 
-			Example: pysql.where('id', 1).delete('table')
-			Param: 'table_name' The table to DELETE from.
-			Param: 'num_rows' The (optional) amount of rows to LIMIT to.
-			return True/False, indicating success.
+			:example: p.where('id', 1).delete('table')
+			:param table_name: The table to DELETE from
+			:param num_rows: The amount of rows to LIMIT to
+			:type num_rows: integer or False
+			:return: True/False, indicating success
 		"""
 		if len(self._where) == 0:
 			return False
@@ -149,14 +164,15 @@ class pysqlw:
 		return res
 
 	def escape(self, string):
+		"""Escape deadly characters from a string"""
 		return self._wrap.dbc.escape_string(string)
 
 	def query(self, q):
-		"""Execute a raw query directly.
+		""" Execute a raw query directly.
 
-			Example: pysql.query('SELECT * FROM `posts` LIMIT 0, 15')
-			Param: 'q' The query to execute.
-			Return: The result of the query. Could be an array, True, False, anything, really.
+			:example: p.query('SELECT * FROM `posts` LIMIT 10, 15')
+			:param q: The query to execute
+			:return: The result of the query. Could be an array, True, False, anything, really
 		"""
 		self._query_type = 'manual'
 		self._query = q
@@ -165,13 +181,21 @@ class pysqlw:
 		return res
 
 	def affected_rows(self):
-		"""Grab the amount of rows affected by the last query.
+		""" Grab the amount of rows affected by the last query.
 
-			Return: The amount of rows modified.
+			:return: The amount of rows modified
+			:rtype: int
 		"""
 		return self._wrap.cursor.rowcount
 
 	def _execute(self, query, data=None):
+		""" Internally pass through a query to the wrapped database
+
+			:param query: The SQL query to execute
+			:param data: List to pass to execution for binding
+			:type data: list or None
+			:return: The results of the query
+		"""
 		if data is not None:
 			self._wrap.cursor.execute(query, data)
 		else:
@@ -183,6 +207,15 @@ class pysqlw:
 		return res
 
 	def _build_query(self, num_rows=False, table_data=False):
+		""" Build an SQL query from given query type, table data and where clauses.
+
+			:param num_rows: The number of rows to LIMIT to
+			:type num_rows: integer or False
+			:param table_data: The key/value data to insert into a table
+			:type table_data: dictionary or False
+			:return: The built SQL query and the data to bind to the query
+			:rtype: tuple
+		"""
 		return_data = ()
 
 		# e.g. -> UPDATE `table` SET `this` = ?, `that` = ?, `foo` = ? WHERE `id` = ?;

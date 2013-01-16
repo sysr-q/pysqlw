@@ -1,7 +1,17 @@
 # -*- coding: utf-8 -*-
 # The base for SQL wrappers to implement.
 class sqltype:
+	""" pysqlw.sqltype is a parent class to the meta-wrappers
+		provided by pysqlw. This allows for simple integration
+		into the pysqlw meta-wrapper family.
+	"""
+
 	def __init__(self, **kwargs):
+		""" Check that all required arguments are given.
+			If they are, keep going, otherwise raise a ValueError.
+
+			:raises ValueError: If a required argument is not given
+		"""
 		for req in self.required:
 			if req in kwargs:
 				continue
@@ -13,19 +23,24 @@ class sqltype:
 		""" What do we *require* to be in the kwargs?
 			As in, without these, nothing will function.
 
-			Return a list with required strings.
+			:return: required arguments in kwargs
+			:rtype: list
 		"""
 		return []
 
 	def connect(self):
 		""" Connect to the database and perform any required actions to setup.
-			Return a (database, cursor) tuple, or False if something went wrong.
+			
+			:return: a (database, cursor) tuple, or False if something went wrong
+			:rtype: tuple or False
 		"""
 		return False
 
 	def format(self, item):
-		""" In a prepared statement, what does this database use for formatting?
+		""" In a prepared statement, what does this database use for param binding?
 			e.g., '?' for sqlite, '%s' for MySQL.
-			Return a string.
+			
+			:return: The format string for param binding
+			:rtype: string
 		"""
 		return '?'
