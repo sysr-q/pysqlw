@@ -35,9 +35,12 @@ For example, if this returned: ``['db_host', 'db_port']``, the script would have
 
 connect()
 ^^^^^^^^^
+.. note::
+	This should return a boolean value based on the success of the connection.
+
 This connects to the database, and stores the database connection object, aswell as the database cursor, to execute queries.
 
-It should return a boolean value based on the success of the connection. Connected to the database? ``True``; something went wrong? ``False``.
+This method **has** to store the database connection to ``self.dbc``, and the database cursor to ``self.cursor``, or else pysqlw will muck up.
 
 format()
 ^^^^^^^^
