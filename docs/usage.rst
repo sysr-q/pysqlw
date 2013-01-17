@@ -28,7 +28,6 @@ Setup for sqlite
 ^^^^^^^^^^^^^^^^
 
 .. code-block:: python
-	:linenos:
 
 	import pysqlw
 
@@ -39,7 +38,6 @@ Setup for MySQL
 ^^^^^^^^^^^^^^^
 
 .. code-block:: python
-	:linenos:
 
 	import pysqlw
 
@@ -62,7 +60,6 @@ SELECT
 ^^^^^^
 
 .. code-block:: python
-	:linenos:
 
 	# SELECT all rows from the table
 	rows = p.get('table_name')
@@ -77,7 +74,6 @@ INSERT
 ^^^^^^
 
 .. code-block:: python
-	:linenos:
 
 	# This is the data we're going to INSERT into the table.
 	# Keys relate to table column names, values are what we're inserting there.
@@ -94,7 +90,6 @@ UPDATE
 You **must** call ``where()`` before you can update.
 
 .. code-block:: python
-	:linenos:
 
 	# k/v relates to column-name/value, as above
 	data = {
@@ -115,7 +110,6 @@ DELETE
 You **must** call ``where()`` before you can delete.
 
 .. code-block:: python
-	:linenos:
 
 	# DELETE any row where: `name` = 'John'
 	if p.where('name', 'Pete').delete('table_name'):
