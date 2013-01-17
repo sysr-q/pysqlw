@@ -7,7 +7,7 @@ def long_desc():
 
 kw = {
     "name": "pysqlw",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "description": "Python wrapper to make MySQL and SQLite easy",
     "long_description": long_desc(),
     "url": "https://github.com/plausibility/pysqlw",
