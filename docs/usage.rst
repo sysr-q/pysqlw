@@ -174,3 +174,16 @@ If for some reason, you wish to execute a manual query (joins, union selects, ot
 	
 	data = p.query('SELECT `this` FROM `that` UNION SELECT `this` FROM `other`')
 	# Data is whatever your query might return.
+
+Close your connections
+^^^^^^^^^^^^^^^^^^^^^^
+.. warning::
+	Once you call ``p.close()``, the object is useless. There is no way to reconnect, you **have** to recreate your object.
+	If you try and interact with it once it's been closed, all sorts of nasty errors could crop up. Don't do it!
+
+If you know you're done with your queries, or you don't need the object anymore, you can simply call ``p.close()`` to kill off connections and null out left over references.
+
+.. code-block:: python
+	
+	rows = p.get('table_name')
+	p.close()

@@ -61,9 +61,19 @@ class pysqlw:
         print '[ ? ]', ' '.join([str(s) for s in stuff])
 
     def __del__(self):
-        """Tear down the database connection"""
+        """Simply calls self.close()"""
+        self.close()
+
+    def close(self):
+        """Tear down the database connection and assign None to unneeded references"""
+        if not self._wrap:
+            return
+
         if self._wrap.dbc:
-            self._wrap.dbc.close()
+            self._Wrap.dbc.close()
+        self._wrap.dbc = None
+        self._wrap.cursor = None
+        self._wrap = None
 
     def _reset(self):
         """Reset the query variables after each query"""
@@ -226,6 +236,8 @@ class pysqlw:
             keys = self._where.keys()
             # If they've supplied table data:
             if isinstance(table_data, dict):
+                # We have to use our own counter because enumerate()
+                # doesn't play nicely with iteritems()
                 count = 1
                 # If we're calling an UPDATE
                 if self._query_type == 'update':
