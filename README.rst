@@ -17,22 +17,22 @@ Requirements
 -  sqlite3 module (comes with Python installs)
 -  Install `MySQLdb`_ if you want MySQL support
 
-    -  If you’re using a Debian-like distro (Ubuntu, Debian, Crunchbang, etc), install the package **python-mysqldb**
+   -  If you’re using a Debian-like distro (Ubuntu, Debian, Crunchbang, etc), install the package **python-mysqldb**
 
-        - ``$ sudo apt-get install python-mysqldb``
+      - ``$ sudo apt-get install python-mysqldb``
 
-    -  There is no pypi package (someone get on this)
-    -  If that didn’t work, or you’re not using a Debian-like distro:
+   -  There is no pypi package (someone get on this)
+   -  If that didn’t work, or you’re not using a Debian-like distro:
 
-        -  Build and install the MySQLdb module from source.
-        -  `This link`_ explains better than I could.
+      -  Build and install the MySQLdb module from source.
+      -  `This link`_ explains better than I could.
 
-    -  Verify it’s installed: ``$ python -c 'import MySQLdb'``
+   -  Verify it’s installed: ``$ python -c 'import MySQLdb'``
 
-        -  If nothing shows up, you’re good!
-        -  If you get an ImportError, think, do you **really** need MySQL?
-        -  If yes, this is a problem, and I can't really help. :(
-        -  If you don't, just use sqlite, it's much easier.
+      -  If nothing shows up, you’re good!
+      -  If you get an ImportError, think, do you **really** need MySQL?
+      -  If yes, this is a problem, and I can't really help. :(
+      -  If you don't, just use sqlite, it's much easier.
 
 Usage
 =====
@@ -40,13 +40,13 @@ Usage
 -  Install pysqlw: ``$ pip install pysqlw``
 -  Import pysqlw:
 
-    - ``import pysqlw``
+   - ``import pysqlw``
 
 -  Create a new instance:
 
-    -  ``p = pysqlw.pysqlw(db_type="sqlite", db_path="/home/user/example.db")``
-    -  If you want to use MySQL you need to supply more details:
-    -  ``p = pysqlw.pysqlw(db_type="mysql", db_host="localhost", db_user="username", db_pass="password", db_name="database_name")``
+   -  ``p = pysqlw.pysqlw(db_type="sqlite", db_path="/home/user/example.db")``
+   -  If you want to use MySQL you need to supply more details:
+   -  ``p = pysqlw.pysqlw(db_type="mysql", db_host="localhost", db_user="username", db_pass="password", db_name="database_name")``
 
 -  Documentation is now on the pysqlw `readthedocs`_ entry.
 
