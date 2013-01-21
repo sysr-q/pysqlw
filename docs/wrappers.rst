@@ -2,12 +2,12 @@ pysqlw wrappers
 ===============
 
 .. |br| raw:: html
-	
-	<br />
+    
+    <br />
 
 .. note::
-	These wrappers are more like *meta-wrappers*. They're just an easy way to create and connect to a wrapped database.
-	The sqlite meta-wrapper just wraps the ``sqlite3`` module, the mysql wrapper just wraps (if you have it) the ``MySQLdb`` module.
+    These wrappers are more like *meta-wrappers*. They're just an easy way to create and connect to a wrapped database.
+    The sqlite meta-wrapper just wraps the ``sqlite3`` module, the mysql wrapper just wraps (if you have it) the ``MySQLdb`` module.
 
 Currently, there are only two supported meta-wrappers, and these are ``sqlite`` and ``mysql``.
 
@@ -36,7 +36,7 @@ For example, if this returned: ``['db_host', 'db_port']``, the script would have
 connect()
 ^^^^^^^^^
 .. note::
-	This should return a boolean value based on the success of the connection.
+    This should return a boolean value based on the success of the connection.
 
 This connects to the database, and stores the database connection object, aswell as the database cursor, to execute queries.
 
@@ -53,26 +53,26 @@ Wrapper example
 This is the mysql meta-wrapper that pysqlw provides.
 
 .. code-block:: python
-	:linenos:
+    :linenos:
 
-	from sqltype import sqltype
+    from sqltype import sqltype
 
-	class mysqlw(sqltype):
-		@property
-		def required(self):
-			return ['db_host', 'db_user', 'db_pass', 'db_name']
+    class mysqlw(sqltype):
+        @property
+        def required(self):
+            return ['db_host', 'db_user', 'db_pass', 'db_name']
 
-		def connect(self):
-			try:
-				import MySQLdb
-				self.dbc = MySQLdb.connect(self.args.get('db_host'), self.args.get('db_user'), self.args.get('db_pass'), self.args.get('db_name'))
-				self.cursor = self.dbc.cursor(MySQLdb.cursors.DictCursor)
-			except Exception as e:
-				return False
-			return True
+        def connect(self):
+            try:
+                import MySQLdb
+                self.dbc = MySQLdb.connect(self.args.get('db_host'), self.args.get('db_user'), self.args.get('db_pass'), self.args.get('db_name'))
+                self.cursor = self.dbc.cursor(MySQLdb.cursors.DictCursor)
+            except Exception as e:
+                return False
+            return True
 
-		def format(self, item):
-			return '%s'
+        def format(self, item):
+            return '%s'
 
 See how easy it is to meta-wrap?
 
