@@ -21,9 +21,10 @@ class pysqlw:
         # Are we gonna print various debugging messages?
         self.debug = debug
 
-        # The wrapper we're using. sqlitew, mysqlw, etc.
+        # The wrapper and wrapper instance we're using. sqlitew, mysqlw, etc.
         # Imported at runtime and used to make objects.
-        self._wrap = None
+        self._wrapper = None
+        self.wrapper = None
 
         # The finalised query string to send to the dbc.
         self._query = ""
@@ -43,15 +44,17 @@ class pysqlw:
 
         try:
             # We're already in the pysqlw package, so just: import wrapperw
-            wrapper = __import__('{0}w'.format(kwargs.get('db_type')), globals(), locals())
-            # Then just make an instance.
-            self._wrap = getattr(wrapper, '{0}w'.format(kwargs.get('db_type')))(**kwargs)
+            self._wrapper = __import__('{0}w'.format(kwargs.get('db_type')), globals(), locals())
+            # Pull out the wrapper class
+            self._wrapper = getattr(self._wrapper, '{0}w'.format(kwargs.get('db_type')))
         except ImportError as e:
             raise ImportError('Database wrapper "{0}" does not exist or is incorrectly packaged'.format(kwargs.get('db_type')))
         except AttributeError as e:
             raise AttributeError('Database wrapper "{0}" exists but is incorrectly written'.format(kwargs.get('db_type')))
 
-        if not self._wrap.connect():
+        self._connect(**kwargs)
+
+        if not self.wrapper.connect():
             raise Exception('Unable to connect to database. ({0})'.format(self._db_type))
 
     def _debug(self, *stuff):
@@ -60,20 +63,32 @@ class pysqlw:
             return
         print '[ ? ]', ' '.join([str(s) for s in stuff])
 
+    def _connect(self, **kwargs):
+        """Instanciate a new wrapper instance"""
+        self.wrapper = self._wrapper(**kwargs)
+
     def __del__(self):
+        """Simply calls self.close()"""
+        self.close()
+
+    def __enter__(self):
+        """Does nothing, the connection is already made"""
+        return self
+
+    def __exit__(self, type_, value_, traceback_):
         """Simply calls self.close()"""
         self.close()
 
     def close(self):
         """Tear down the database connection and assign None to unneeded references"""
-        if not self._wrap:
+        if not self.wrapper:
             return
 
-        if self._wrap.dbc:
-            self._wrap.dbc.close()
-        self._wrap.dbc = None
-        self._wrap.cursor = None
-        self._wrap = None
+        if self.wrapper.dbc:
+            self.wrapper.dbc.close()
+        self.wrapper.dbc = None
+        self.wrapper.cursor = None
+        self.wrapper = None
 
     def _reset(self):
         """Reset the query variables after each query"""
@@ -176,7 +191,7 @@ class pysqlw:
 
     def escape(self, string):
         """Escape deadly characters from a string"""
-        return self._wrap.dbc.escape_string(string)
+        return self.wrapper.dbc.escape_string(string)
 
     def query(self, q):
         """ Execute a raw query directly.
@@ -197,7 +212,7 @@ class pysqlw:
             :return: The amount of rows modified
             :rtype: int
         """
-        return self._wrap.cursor.rowcount
+        return self.wrapper.cursor.rowcount
 
     def _execute(self, query, data=None):
         """ Internally pass through a query to the wrapped database
@@ -208,13 +223,13 @@ class pysqlw:
             :return: The results of the query
         """
         if data is not None:
-            self._wrap.cursor.execute(query, data)
+            self.wrapper.cursor.execute(query, data)
         else:
-            self._wrap.cursor.execute(query)
+            self.wrapper.cursor.execute(query)
         if self._db_type == 'sqlite':
-            self._wrap.dbc.commit()
-        res = self._wrap.cursor.fetchall()
-        self._affected_rows = int(self._wrap.cursor.rowcount)
+            self.wrapper.dbc.commit()
+        res = self.wrapper.cursor.fetchall()
+        self._affected_rows = int(self.wrapper.cursor.rowcount)
         return res
 
     def _build_query(self, num_rows=False, table_data=False):
@@ -242,7 +257,7 @@ class pysqlw:
                 # If we're calling an UPDATE
                 if self._query_type == 'update':
                     for key, val in table_data.iteritems():
-                        format = self._wrap.format(val)
+                        format = self.wrapper.format(val)
                         if count == len(table_data):
                             self._query += "`{0}` = {1}".format(key, format)
                         else:
@@ -252,7 +267,7 @@ class pysqlw:
             self._query += " WHERE "
             where_clause = []
             for key, val in self._where.iteritems():
-                format = self._wrap.format(val)
+                format = self.wrapper.format(val)
                 where_clause.append("`{0}` = {1}".format(key, format))
                 return_data = return_data + (val,)
             self._query += ' AND '.join(where_clause)
@@ -269,7 +284,7 @@ class pysqlw:
             # Append VALUES (?,?,?) however many we need.
             format = ""
             for count, val in enumerate(vals):
-                format += '{0},'.format(self._wrap.format(val))
+                format += '{0},'.format(self.wrapper.format(val))
             format = format[:-1]
 
             self._query += "VALUES ({0})".format(format)

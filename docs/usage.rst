@@ -187,3 +187,33 @@ If you know you're done with your queries, or you don't need the object anymore,
 	
 	rows = p.get('table_name')
 	p.close()
+
+Making it simpler
+-----------------
+Some neato functions are included, just to make life with pysqlw easier.
+
+.. _with:
+with pysqlw as p
+^^^^^^^^^^^^^^^^
+pysqlw supports (as of ``1.3.0``) the python ``with`` statement. This makes it much easier to visually see where you're working with a pysqlw instance.
+
+.. code-block:: python
+
+	with pysqlw.pysqlw(...) as p:
+		rows = p.get('table_name')
+		do_something_with(rows)
+	# done!
+
+This calls the close statement and all, so you're good to go without any dead resources.
+
+raw wrapper access
+^^^^^^^^^^^^^^^^^^
+If for whatever reason you need access to the underlying database connection, or the databases' cursor, they're easy to find, under the ``p.wrapper`` object.
+
+``p.wrapper.dbc`` is your database connection, and ``p.wrapper.cursor`` is the databases' cursor. Simple, right?
+
+.. code-block:: python
+
+	# execute our schema: CREATE TABLE IF ...
+	with pysqlw.pysqlw(...) as p:
+		p.wrapper.cursor.executescript(my_schema_file())

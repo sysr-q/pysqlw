@@ -7,13 +7,14 @@ pysqlw
 .. _readthedocs: https://pysqlw.readthedocs.org
 .. _pysqlw wrappers: https://pysqlw.readthedocs.org/en/latest/wrappers.html
 .. _github repo: https://github.com/plausibility/pysqlw
+.. _with: https://pysqlw.readthedocs.org/en/latest/usage.html#with-pysqlw-as-p
 
 A Python based wrapper (meta-wrapper, even) allowing easy MySQL and SQLite interactions.
 
 Requirements
 ============
 
--  Python 2.7.3 (this is what I test with, should work with most 2.x, not sure about 3.x)
+-  Python 2.7.3 (this is what I test with, should work with most 2.x; 3.x not guaranteed without porting)
 -  sqlite3 module (comes with Python installs)
 -  Install `MySQLdb`_ if you want MySQL support
 
@@ -47,6 +48,7 @@ Usage
    -  ``p = pysqlw.pysqlw(db_type="sqlite", db_path="/home/user/example.db")``
    -  If you want to use MySQL you need to supply more details:
    -  ``p = pysqlw.pysqlw(db_type="mysql", db_host="localhost", db_user="username", db_pass="password", db_name="database_name")``
+   -  Alternatively, you can use it with Python's `with`_ statement.
 
 -  Documentation is now on the pysqlw `readthedocs`_ entry.
 

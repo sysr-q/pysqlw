@@ -14,7 +14,6 @@ class sqlitew(sqltype):
             self.dbc.row_factory = self._sqlite_dict_factory
             self.cursor = self.dbc.cursor()
         except Exception as e:
-            raise
             return False
         return True
 
