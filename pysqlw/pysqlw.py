@@ -70,7 +70,7 @@ class pysqlw:
             return
 
         if self._wrap.dbc:
-            self._Wrap.dbc.close()
+            self._wrap.dbc.close()
         self._wrap.dbc = None
         self._wrap.cursor = None
         self._wrap = None
