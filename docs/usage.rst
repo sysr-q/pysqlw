@@ -192,17 +192,17 @@ Making it simpler
 -----------------
 Some neato functions are included, just to make life with pysqlw easier.
 
-.. _with:
 with pysqlw as p
 ^^^^^^^^^^^^^^^^
-pysqlw supports (as of ``1.3.0``) the python ``with`` statement. This makes it much easier to visually see where you're working with a pysqlw instance.
+.. versionadded:: 1.3.0
+
+pysqlw supports the python ``with`` statement. This makes it much easier to visually see where you're working with a pysqlw instance.
 
 .. code-block:: python
 
     with pysqlw.pysqlw(...) as p:
         rows = p.get('table_name')
         do_something_with(rows)
-    # done!
 
 This calls the close statement and all, so you're good to go without any dead resources.
 
