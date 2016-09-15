@@ -107,7 +107,6 @@ You **must** call ``where()`` before you can update.
 
 DELETE
 ^^^^^^
-You **must** call ``where()`` before you can delete.
 
 .. code-block:: python
 
@@ -117,6 +116,10 @@ You **must** call ``where()`` before you can delete.
 
     # DELETE only a single row where: `id` = 1
     if p.where('id', 1).delete('table_name'):
+        # Success!
+
+    # DELETE all rows in the table:
+    if p.delete('table_name'):
         # Success!
 
 WHERE

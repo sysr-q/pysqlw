@@ -168,24 +168,21 @@ class pysqlw:
         return res
 
     def delete(self, table_name, num_rows=False):
-        """ DELETE from a table. where() must be called first.
+        """ DELETE from a table. where() should be called first, but it's not
+            required.
 
-            :example: p.where('id', 1).delete('table')
+            :example: p..delete('table')
             :param table_name: The table to DELETE from
+            :type table_name: string
             :param num_rows: The amount of rows to LIMIT to
             :type num_rows: integer or False
             :return: True/False, indicating success
         """
-        if len(self._where) == 0:
-            return False
         self._query_type = 'delete'
         self._query = "DELETE FROM `{0}`".format(table_name)
         stmt, data = self._build_query(num_rows=num_rows)
-        res = self._execute(stmt, data)
-        if self._affected_rows > 0:
-            res = True
-        else:
-            res = False
+        self._execute(stmt, data)
+        res = self._affected_rows > 0
         self._reset()
         return res
 
@@ -258,10 +255,9 @@ class pysqlw:
                 if self._query_type == 'update':
                     for key, val in table_data.iteritems():
                         format = self.wrapper.format(val)
-                        if count == len(table_data):
-                            self._query += "`{0}` = {1}".format(key, format)
-                        else:
-                            self._query += "`{0}` = {1}, ".format(key, format)
+                        self._query += "`{0}` = {1}".format(key, format)
+                        if count != len(table_data):
+                            self._query += ","
                         return_data = return_data + (val,)
                         count += 1
             self._query += " WHERE "
@@ -281,7 +277,7 @@ class pysqlw:
                 # Wrap column names in backticks.
                 keys[count] = "`{0}`".format(key)
             self._query += " ({0}) ".format(', '.join(keys))
-            # Append VALUES (?,?,?) however many we need.
+            # Append as many VALUES (?,?,?) as we need
             format = ""
             for count, val in enumerate(vals):
                 format += '{0},'.format(self.wrapper.format(val))
@@ -291,7 +287,6 @@ class pysqlw:
             for val in vals:
                 return_data = return_data + (val,)
 
-        # Do you want LIMIT with that, baby?!
         if num_rows:
             self._query += " LIMIT {0}".format(num_rows)
         return (self._query, return_data,)

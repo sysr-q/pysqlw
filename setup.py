@@ -7,7 +7,7 @@ def long_desc():
 
 kw = {
     "name": "pysqlw",
-    "version": "1.3.0",
+    "version": "1.3.1",
     "description": "Python wrapper to make interacting with SQL databases easy",
     "long_description": long_desc(),
     "url": "https://github.com/plausibility/pysqlw",
